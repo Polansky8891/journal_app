@@ -2,11 +2,33 @@ import { Google } from "@mui/icons-material"
 import { Button, Grid, Link, TextField, Typography, Box } from "@mui/material"
 import { Link as RouterLink } from "react-router-dom"
 import { AuthLayout } from "../layout/AuthLayout"
+import { useForm } from "../../hooks/useForm"
+import { useDispatch } from "react-redux"
+import { checkingAuthentication, startGoogleSignIn } from "../../store/auth/thunks"
 
 export const LoginPage = () => {
+
+  const dispatch = useDispatch();
+  const { email, password, onInputChange } = useForm({
+    email: 'pol@google.com',
+    password: '123456'
+  });
+
+  const onSubmit = ( event ) => {
+    event.preventDefault();
+
+    dispatch( checkingAuthentication() );
+  }
+
+  const onGoogleSignIn = () => {
+
+    dispatch( startGoogleSignIn() );
+
+  }
+
   return (
     <AuthLayout title="Login">
-      <form>
+      <form onSubmit={ onSubmit }>
         <Grid container direction="column" spacing={3}>
           {/* Email */}
           <Grid item>
@@ -18,6 +40,8 @@ export const LoginPage = () => {
               placeholder="correo@google.com"
               type="email"
               variant="outlined"
+              onChange={ onInputChange }
+              value={ email }
             />
           </Grid>
 
@@ -31,6 +55,8 @@ export const LoginPage = () => {
               placeholder="password"
               type="password"
               variant="outlined"
+              value={ password }
+              onChange={ onInputChange }
             />
           </Grid>
 
@@ -38,6 +64,7 @@ export const LoginPage = () => {
           <Grid item>
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Button
+                type="submit"
                 variant="contained"
                 fullWidth
                 sx={{
@@ -54,6 +81,7 @@ export const LoginPage = () => {
               </Button>
 
               <Button
+                onClick={ onGoogleSignIn }
                 variant="contained"
                 fullWidth
                 sx={{
