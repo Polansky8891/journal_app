@@ -7,10 +7,19 @@ import Box from '@mui/material/Box';
 
 import LogoutOutlined from '@mui/icons-material/LogoutOutlined';
 import MenuOutlined from '@mui/icons-material/MenuOutlined';
+import { useDispatch } from 'react-redux';
+import { startLogout } from '../../store/auth/thunks';
 
 
 
 export const NavBar = ({ drawerWidth = 240 }) => {
+
+  const dispatch = useDispatch();
+
+  const onLogout = () => {
+    dispatch( startLogout() );
+
+  }
   return (
     <AppBar 
       position='fixed'
@@ -34,7 +43,10 @@ export const NavBar = ({ drawerWidth = 240 }) => {
 
         <Box sx={{ flexGrow: 1 }} />
 
-        <IconButton color='error'>
+        <IconButton 
+            color='error'
+            onClick={ onLogout }
+        >
           <LogoutOutlined />
         </IconButton>
       </Toolbar>
