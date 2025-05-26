@@ -1,4 +1,6 @@
 import { loginWithEmailPassword, logoutFirebase, registerUserWithEmailPassword, signInWithGoogle } from "../../firebase/providers";
+import { loadNotes } from "../../helpers/loadNotes";
+import { setNotes } from "../journal/journalSlice";
 import { checkingCredentials, logout, login } from "./authSlice"
 
 export const checkingAuthentication = () => {
@@ -55,5 +57,28 @@ export const startLogout = () => {
         await logoutFirebase();
 
         dispatch( logout() );
+    }
+}
+
+export const startLoadingNotes = () => {
+    return async( dispatch, getState ) => {
+
+        const { uid } = getState().auth;
+
+        const notes = await loadNotes( uid );
+        dispatch( setNotes( notes ));
+    }
+
+}
+
+export const startSaveNote = () => {
+    return async( dispatch, getState ) =>{
+
+        const { uid } = getState().auth;
+        const { active:note } = getState().journal;
+
+        const noteToFireStore = { ...note }
+        delete noteToFireStore.id;
+
     }
 }
