@@ -1,64 +1,94 @@
-import { Grid, Typography, Button, TextField } from '@mui/material';
-import { SaveOutlined } from '@mui/icons-material';
+import { Grid, Typography, Button, TextField, IconButton, Box } from '@mui/material';
+import { SaveOutlined, UploadOutlined } from '@mui/icons-material';
 import { ImageGallery } from '../components/ImageGallery';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from '../../hooks/useForm';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { setActiveNote } from '../../store/journal/journalSlice';
-import { startSaveNote } from '../../store/auth/thunks';
+import { startSaveNote, startUploadingFiles } from '../../store/journal/thunks';
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.css';
+
 
 
 
 export const NoteView = () => {
 
   const dispatch = useDispatch();
-    const { active:note, messageSaved, isSaving } = useSelector( state => state.journal );
+  const { active: note, messageSaved, isSaving } = useSelector(state => state.journal);
 
-    const { body, title, date, onInputChange, formState } = useForm( note );
+  const { body, title, date, onInputChange, formState } = useForm(note);
 
   const dateString = useMemo(() => {
-    const newDate = new Date( date );
+    const newDate = new Date(date);
     return newDate.toUTCString();
-  }, [date])
+  }, [date]);
+
+  const fileInputRef = useRef();
 
   useEffect(() => {
-      dispatch( setActiveNote(formState) );
+    dispatch(setActiveNote(formState));
+  }, [formState]);
 
-  }, [formState])
+  useEffect(() => {
+    if (messageSaved.length > 0) {
+      Swal.fire('Nota actualizada', messageSaved, 'success');
+    }
+  }, [messageSaved]);
 
-  const onSaveNote = () =>{
-      dispatch( startSaveNote);
-  }
+  const onSaveNote = () => {
+    dispatch(startSaveNote());
+  };
 
-
-
+  const onFileInputChange = ({ target }) => {
+    if (target.files.length === 0) return;
+    dispatch( startUploadingFiles( target.files ) );
+  };
 
   return (
     <Grid container direction="column" spacing={2}>
-
-      
       <Grid item>
-        <Grid 
-            className='animate__animated animate__fadeIn animate__faster'
-            container 
-            direction="row" 
-            justifyContent="space-between" 
-            alignItems="center">
+        <Grid
+          className='animate__animated animate__fadeIn animate__faster'
+          container 
+          direction="row" 
+          justifyContent="space-between" 
+          alignItems="center"
+        >
           <Typography fontSize={39} fontWeight="light">
-            { dateString }
+            {dateString}
           </Typography>
 
-          <Button 
-              onClick={ onSaveNote }
+          <Box display="flex" alignItems="center" gap={1}>
+            <IconButton 
+              color='primary'
+              component="label"
+              disabled={isSaving}
+              onClick={ () => fileInputRef.current.click() }
+            >
+              <UploadOutlined />
+              <input 
+                type="file" 
+                style={{ display: 'none'}}
+                multiple
+                ref={ fileInputRef } 
+                onChange={onFileInputChange} 
+              />
+            </IconButton>
+
+            <Button 
+              disabled={isSaving} 
+              onClick={onSaveNote}
               color="primary" 
-              sx={{ padding: 2 }}>
-            <SaveOutlined sx={{ fontSize: 30, mr: 1 }} />
-            Guardar
-          </Button>
+              sx={{ padding: 2 }}
+            >
+              <SaveOutlined sx={{ fontSize: 30, mr: 1 }} />
+              Guardar
+            </Button>
+          </Box>
         </Grid>
       </Grid>
 
-      
       <Grid item>
         <TextField
           type="text"
@@ -68,8 +98,8 @@ export const NoteView = () => {
           label="Título"
           sx={{ mb: 1 }}
           name="title"
-          value={ title }
-          onChange={ onInputChange }
+          value={title}
+          onChange={onInputChange}
         />
 
         <TextField
@@ -80,8 +110,8 @@ export const NoteView = () => {
           placeholder="¿Qué sucedió en el día de hoy?"
           minRows={5}
           name="body"
-          value={ body }
-          onChange={ onInputChange }
+          value={body}
+          onChange={onInputChange}
         />
       </Grid>
 
