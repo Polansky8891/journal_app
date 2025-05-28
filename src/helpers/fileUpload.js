@@ -1,12 +1,14 @@
 
 
-export const fileUpload = async() => {
-    if ( !file ) throw new Error('No tenemos ningún archivo por subir');
+export const fileUpload = async( file ) => {
+   // if ( !file ) throw new Error('No tenemos ningún archivo por subir');
+
+   if ( !file ) return null;
 
     const cloudUrl = 'https://api.cloudinary.com/v1_1/dndspqgrl/upload';
 
     const formData = new FormData();
-    formData.append('upload-preset', 'react-journal');
+    formData.append('upload_preset', 'react-journal');
     formData.append('file', file);
 
     try {
@@ -24,7 +26,7 @@ export const fileUpload = async() => {
         
     } catch (error) {
         
-        throw new Error( error. message );
+        return null;
     }
 
 }
