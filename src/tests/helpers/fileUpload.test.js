@@ -1,4 +1,6 @@
+import { v2 as cloudinary } from 'cloudinary'
 import { fileUpload } from "../../helpers/fileUpload";
+
 
 cloudinary.config({
         cloud_name: 'dndspqgrl',
@@ -7,6 +9,7 @@ cloudinary.config({
         secure: true
 
 });
+
 
 
 
@@ -22,6 +25,11 @@ describe('Pruebas en fileUpload', () => {
 
             const url = await fileUpload( file );
             expect( typeof url).toBe('string');
+
+            const segments = url.split('/');
+            const imageId = segments[ segments.length - 1 ].replace('.jpg', '');
+
+            await cloudinary.api.delete_resources([ imageId ]);
 
     });
 

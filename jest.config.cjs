@@ -1,11 +1,5 @@
 module.exports = {
-  testEnvironment: 'jsdom',
-  setupFiles: ['./jest.setup.cjs'],
-  transform: {
-    '^.+\\.[jt]sx?$': ['@swc/jest'],
-  },
-  transformIgnorePatterns: [
-    '/node_modules/(?!@firebase|firebase)', // ⚠️ transforma Firebase
-  ],
-  moduleFileExtensions: ['js', 'jsx'],
-};
+    testEnvironment: 'jest-environment-jsdom',
+    setupFiles: ['./jest.setup.js'],
+    transformIgnorePatterns: ["node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"],
+}
